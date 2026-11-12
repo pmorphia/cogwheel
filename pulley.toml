@@ -1,0 +1,8 @@
+[package]
+name = "cogwheel"
+author = "danny"
+version = "1.0.0"
+description = "Configuration written as Markdown: .cw files"
+main = "cogwheel.fw"
+license = "MIT"
+exclude = ["c/*", "cpp/*", "pycogwheel/*", "tests/*", ".gitignore"]

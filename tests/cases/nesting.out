@@ -1,0 +1,13 @@
+entry top = level zero
+section 1 Server
+entry Server/host = 127.0.0.1
+entry Server/port = 8080
+section 3 Server/Deep
+entry Server/Deep/deep = yes
+section 2 Server/Paths
+entry Server/Paths/url = https://example.com/?a=b&c=d
+entry Server/Paths/spaced key = value with spaces
+section 1 Client
+entry Client/retries = 3
+entry Client/retries = 4
+roundtrip true

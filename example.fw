@@ -1,0 +1,20 @@
+# flywheel example.fw: reads main.cw, the example configuration.
+import cogwheel
+
+var conf = cogwheel.confile("main.cw")
+print conf["#Main"]["#User Section"][">name"]
+print conf.getById("Main")["#User Section"].get("email")
+print conf.selectorAll()[">name"]
+print conf.to_map()
+
+# The same document, built with markup
+var built = cogwheel.from_markup(<cogwheel.cw>
+    <cogwheel.heading name="Main">
+        <cogwheel.heading name="User Section">
+            <cogwheel.rawstr>Settings of the user.</cogwheel.rawstr>
+            <cogwheel.conf key="name" value="danny">
+            <cogwheel.conf key="email" value="user@example.com">
+        </cogwheel.heading>
+    </cogwheel.heading>
+</cogwheel.cw>)
+print built

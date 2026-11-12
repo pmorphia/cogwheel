@@ -1,0 +1,5 @@
+section 1 Main
+section 2 Main/User Section
+entry Main/User Section/name = 123
+entry Main/User Section/email = user@example.com
+roundtrip true

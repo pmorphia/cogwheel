@@ -1,0 +1,26 @@
+# Prints a .cw file's tree for the conformance tests: every section and entry in document
+# order, then whether the document writes back exactly as it was read.
+import cogwheel
+import fs
+import os
+
+function walk(cogwheel.Node n, string path) returns void
+    for child in n.children do
+        if child.kind == "section" do
+            var p = child.name if path == "" else path + "/" + child.name
+            print "section {child.level} {p}"
+            walk(child, p)
+        else if child.kind == "entry" do
+            var p = child.name if path == "" else path + "/" + child.name
+            print "entry {p} = {cogwheel.quote(child.value)}"
+            if child.name.starts_with("list") do
+                print "  list: {" | ".join(n.get_list(child.name))}"
+            end
+        end
+    end
+end
+
+var file = os.args()[0]
+var doc = cogwheel.confile(file)
+walk(doc, "")
+print "roundtrip {doc.source() == fs.read(file)}"

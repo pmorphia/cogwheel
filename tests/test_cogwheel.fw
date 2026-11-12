@@ -1,0 +1,51 @@
+# flywheel test tests/ (or flywheel-lite test tests/): the Flywheel library's API.
+import cogwheel
+import testing
+
+const string MAIN = "Edit fields after >\n\n# Main\n\n## User Section\n\nAbout users.\n\n> name = 123\n\n> email = user@example.com\n"
+
+function test_selectors
+    var doc = cogwheel.parse(MAIN)
+    testing.assert_equal(string(doc["#Main"]["#User Section"][">name"]), "123")
+    testing.assert_equal(doc.getById("Main")["#User Section"].get("name"), "123")
+    testing.assert_equal(string(doc.selectorAll()[">email"]), "user@example.com")
+    testing.assert_equal(doc.get_by_id("User Section").get_int("name"), 123)
+    testing.assert_equal(doc.getById("User Section").text(), "About users.")
+    testing.assert(not doc.has(">name") and doc.selectorAll().has(">name"))
+    testing.assert_equal(doc.source(), MAIN)
+end
+
+function test_missing
+    var doc = cogwheel.parse(MAIN)
+    var e = testing.expect_error(KeyError, function() => doc["#Nope"])
+    testing.assert(e.message.contains("Nope"))
+    testing.assert_equal(doc.get_or("name", "x"), "x")
+end
+
+function test_changes
+    var doc = cogwheel.parse(MAIN)
+    doc.getById("User Section").set("name", "danny").set("age", "3").set("motto", "  spaced ")
+    testing.assert_equal(doc.source(), MAIN.replace("123", "danny") + "\n> age = 3\n\n> motto = \"  spaced \"\n")
+    var two = cogwheel.parse("# A\n\n> x = 1\n")
+    two.add_section("B").set("y", "2").add_text("About B.")
+    two["#A"].add_section("Inner").set("z", "true")
+    testing.assert_equal(two.source(), "# A\n\n> x = 1\n\n## Inner\n\n> z = true\n\n# B\n\n> y = 2\n\nAbout B.\n")
+    testing.assert(two.getById("Inner").get_bool("z"))
+    testing.assert(two.selectorAll().remove(">z") and not two.remove(">z"))
+    testing.assert(two.remove("#B"))
+    testing.assert_equal(two.sections().length, 1)
+end
+
+function test_values
+    var v = cogwheel.parse("> n = -1_500\n\n> d = 2.5e1\n\n> l = [x, \"y, z\"]\n\n> bad = maybe\n")
+    testing.assert_equal(v.get_int("n"), -1500)
+    testing.assert_equal(v.get_float("d"), 25.0)
+    testing.assert_equal(" | ".join(v.get_list("l")), "x | y, z")
+    testing.expect_error(ValueError, function() => v.get_bool("bad"))
+end
+
+function test_markup
+    var doc = cogwheel.from_markup(<cogwheel.cw><cogwheel.heading name="Main"><cogwheel.rawstr>Hello world!</cogwheel.rawstr><cogwheel.conf key="name" value="danny"><cogwheel.conf key="email" value="user@example.com"></cogwheel.heading></cogwheel.cw>)
+    testing.assert_equal(doc.source(), "# Main\n\nHello world!\n\n> name = danny\n\n> email = user@example.com\n")
+    testing.assert_equal(doc["#Main"].get("email"), "user@example.com")
+end

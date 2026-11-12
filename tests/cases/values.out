@@ -1,0 +1,13 @@
+section 1 Values
+entry Values/empty = ""
+entry Values/quoted = "  keep  spaces "
+entry Values/escapes = "line\nbreak \"quote\" back\\slash"
+entry Values/list-plain = a, b , c
+  list: a | b | c
+entry Values/list-brackets = [1, "two, three", 4]
+  list: 1 | two, three | 4
+entry Values/list-empty = []
+  list: 
+entry Values/unicode = héllo wörld ✓
+entry Values/trailing = x =
+roundtrip true

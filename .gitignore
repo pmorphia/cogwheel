@@ -1,0 +1,5 @@
+# pmorphia/pycogwheel is its own repository, checked out here
+/pycogwheel/
+.flywheel-modules/
+*.o
+a.out
