@@ -139,6 +139,23 @@ conf.save()
 
 See [pycogwheel](https://github.com/pmorphia/pycogwheel).
 
+## The cogwheel command
+
+`pulley install polymorphia.cogwheel` installs the `cogwheel` command, which reads and edits
+`.cw` files from the shell (in a project that depends on the package, `pulley run cogwheel`
+runs it). Entries are named by their path of sections and key, as `to_map()` names them:
+
+```sh
+cogwheel list main.cw                                # Main.User Section.name = danny, ...
+cogwheel get main.cw "Main.User Section.name"        # danny
+cogwheel set main.cw "Main.User Section.name" ann    # in place; adds missing sections
+cogwheel json main.cw                                # every entry as a JSON object
+cogwheel sections main.cw                            # the section outline
+```
+
+Section names may contain dots: each part of a path is matched against the longest section
+name it can be.
+
 ## Tests
 
 `tests/run.sh` runs each port's tests and checks every port against the conformance cases in

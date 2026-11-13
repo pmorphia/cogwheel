@@ -1,8 +1,11 @@
 [package]
 name = "cogwheel"
-author = "danny"
+author = "polymorphia"
 version = "1.0.0"
 description = "Configuration written as Markdown: .cw files"
 main = "cogwheel.fw"
 license = "MIT"
 exclude = ["c/*", "cpp/*", "pycogwheel/*", "tests/*", ".gitignore", ".gitattributes"]
+
+[commands]
+cogwheel = "cli.fw"

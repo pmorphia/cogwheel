@@ -1,0 +1,115 @@
+# The cogwheel command (`pulley install polymorphia.cogwheel`; `pulley run cogwheel` in a project
+# that depends on it): cogwheel COMMAND FILE.cw ...
+#   list FILE              every entry, as `Section.Subsection.key = value`
+#   get FILE PATH          one entry's value, by its path (`Main.User Section.name`)
+#   set FILE PATH VALUE    change or add an entry (and the sections on its path), in place
+#   json FILE              every entry as a JSON object keyed by path
+#   sections FILE          the section outline
+import cogwheel
+import io
+import json
+import os
+
+const string USAGE = "usage: cogwheel list|json|sections FILE.cw | get FILE.cw PATH | set FILE.cw PATH VALUE"
+
+function fail(string message) returns int
+    io.write_error("cogwheel: " + message + "\n")
+    return 1
+end
+
+# The section an entry path names, and the entry's key: each section is the longest run of
+# path parts that names a child section, so section names may contain dots. With `create`,
+# missing sections are added.
+function locate(cogwheel.Node doc, string path, bool create) returns [cogwheel.Node?, string]
+    var parts = path.split(".")
+    cogwheel.Node node = doc
+    int i = 0
+    while i < parts.length - 1 do
+        int found = 0
+        int j = parts.length - 1
+        while j > i do
+            var name = ".".join(parts.slice(i, j))
+            for s in node.sections() do
+                if s.name == name and found == 0 do
+                    node = s
+                    found = j
+                end
+            end
+            if found > 0 do
+                break
+            end
+            j -= 1
+        end
+        if found > 0 do
+            i = found
+        else if create do
+            node = node.add_section(parts[i])
+            i += 1
+        else do
+            return [null, ""]
+        end
+    end
+    return [node, ".".join(parts.slice(i, parts.length))]
+end
+
+function outline(cogwheel.Node node, int depth) returns void
+    for s in node.sections() do
+        var n = s.entries().length
+        print "  ".repeat(depth) + s.name + (" ({n} " + ("entry" if n == 1 else "entries") + ")" if n > 0 else "")
+        outline(s, depth + 1)
+    end
+end
+
+function run(string[] args) returns int
+    if args.length < 2 do
+        io.write_error(USAGE + "\n")
+        return 2
+    end
+    var command = args[0]
+    var file = args[1]
+    var doc = cogwheel.confile(file)
+    if command == "list" and args.length == 2 do
+        for key, value in doc.to_map() do
+            print "{key} = {value}"
+        end
+        return 0
+    end
+    if command == "json" and args.length == 2 do
+        print json.encode(doc.to_map(), 2)
+        return 0
+    end
+    if command == "sections" and args.length == 2 do
+        outline(doc, 0)
+        return 0
+    end
+    if command == "get" and args.length == 3 do
+        var entries = doc.to_map()
+        if not (args[2] in entries) do
+            return fail("no entry {args[2]} in {file}")
+        end
+        print entries[args[2]]
+        return 0
+    end
+    if command == "set" and args.length == 4 do
+        var where = locate(doc, args[2], true)
+        var section = where[0]
+        if section == null or where[1] == "" do
+            return fail("{args[2]} doesn't name an entry")
+        end
+        section.set(where[1], args[3])
+        doc.save()
+        return 0
+    end
+    io.write_error(USAGE + "\n")
+    return 2
+end
+
+function main(string[] args) returns int
+    try
+        return run(args)
+    catch Error e
+        return fail(e.message)
+    end
+end
+
+return main(os.args())
