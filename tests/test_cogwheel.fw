@@ -1,4 +1,4 @@
-# flywheel test tests/ (or flywheel-lite test tests/): the Flywheel library's API.
+# flywheel --test tests/ (or flywheel-lite test tests/): the Flywheel library's API.
 import cogwheel
 import testing
 

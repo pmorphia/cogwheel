@@ -25,7 +25,7 @@ they changed. The format is specified in [SPEC.md](SPEC.md); [main.cw](main.cw) 
 
 | Language | Library | Install |
 |---|---|---|
-| [Flywheel](https://flywheel.polymorphia.dev) | `cogwheel` in the standard library (compiler, Flywheel Lite, flywheel.js) | built in; `pulley add danny.cogwheel` for the latest |
+| [Flywheel](https://flywheel.polymorphia.dev) | `cogwheel` in the standard library (compiler, Flywheel Lite, flywheel.js) | built in; `pulley add polymorphia.cogwheel` for the latest |
 | Python | [pycogwheel](https://github.com/pmorphia/pycogwheel) | `pip install pycogwheel` |
 | C99 | [c/cogwheel.h](c/cogwheel.h), [c/cogwheel.c](c/cogwheel.c) | copy the two files |
 | C++17 | [cpp/cogwheel.hpp](cpp/cogwheel.hpp) (header only) | copy the file |
@@ -86,9 +86,9 @@ Hello world!
 
 `cogwheel` is a library module of Flywheel, Flywheel Lite, and flywheel.js from their releases
 after Flywheel 2.17 (in flywheel.js, `confile` and `save` need Node, since browsers have no
-files). This repository is also the Pulley package `danny.cogwheel`, which takes precedence
+files). This repository is also the Pulley package `polymorphia.cogwheel`, which takes precedence
 over the built-in module when it is installed, and works with earlier releases that support
-the markup it uses: `pulley add danny.cogwheel`.
+the markup it uses: `pulley add polymorphia.cogwheel`.
 
 ## C
 
